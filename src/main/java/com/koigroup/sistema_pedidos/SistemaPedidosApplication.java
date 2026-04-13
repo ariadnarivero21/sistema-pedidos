@@ -10,7 +10,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 public class SistemaPedidosApplication {
 
 	public static void main(String[] args) {
-		System.out.println("BCrypt de 'admin': " + new BCryptPasswordEncoder().encode("admin"));
 		SpringApplication.run(SistemaPedidosApplication.class, args);
 	}
 
