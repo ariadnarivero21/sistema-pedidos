@@ -30,7 +30,8 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "localhost:8080/metrics",
+              "raw": "http://localhost:8080/metrics",
+              "protocol": "http",
               "host": [
                 "localhost"
               ],
@@ -63,7 +64,13 @@
           ]
         },
         "method": "POST",
-        "header": [],
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
         "body": {
           "mode": "raw",
           "raw": "",
@@ -74,7 +81,8 @@
           }
         },
         "url": {
-          "raw": "localhost:8080/pedidos/usuarios/1/carrito",
+          "raw": "http://localhost:8080/pedidos/usuarios/1/carrito",
+          "protocol": "http",
           "host": [
             "localhost"
           ],
@@ -108,7 +116,13 @@
           ]
         },
         "method": "POST",
-        "header": [],
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
         "body": {
           "mode": "raw",
           "raw": "{\r\n    \"codigo_carrito\": \"CAR-09DBA818\",\r\n    \"codigo_producto\": \"ALI-003\",\r\n    \"cantidad_producto\" : 6\r\n}",
@@ -119,7 +133,8 @@
           }
         },
         "url": {
-          "raw": "localhost:8080/pedidos/carrito/producto",
+          "raw": "http://localhost:8080/pedidos/carrito/producto",
+          "protocol": "http",
           "host": [
             "localhost"
           ],
@@ -152,9 +167,16 @@
           ]
         },
         "method": "DELETE",
-        "header": [],
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
         "url": {
-          "raw": "localhost:8080/pedidos/carritos/{codigoCarrito}/productos/{codigoProducto}",
+          "raw": "http://localhost:8080/pedidos/carritos/{codigoCarrito}/productos/{codigoProducto}",
+          "protocol": "http",
           "host": [
             "localhost"
           ],
@@ -189,9 +211,16 @@
           ]
         },
         "method": "GET",
-        "header": [],
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
         "url": {
-          "raw": "localhost:8080/pedidos/carritos/{codigoCarrito}/productos",
+          "raw": "http://localhost:8080/pedidos/carritos/{codigoCarrito}/productos",
+          "protocol": "http",
           "host": [
             "localhost"
           ],
@@ -225,9 +254,16 @@
           ]
         },
         "method": "GET",
-        "header": [],
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
         "url": {
-          "raw": "localhost:8080/pedidos/usuarios/1/carritos",
+          "raw": "http://localhost:8080/pedidos/usuarios/1/carritos",
+          "protocol": "http",
           "host": [
             "localhost"
           ],
@@ -261,9 +297,16 @@
           ]
         },
         "method": "POST",
-        "header": [],
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
         "url": {
-          "raw": "localhost:8080/pedidos/carritos/{codigoCarrito}/pedido",
+          "raw": "http://localhost:8080/pedidos/carritos/{codigoCarrito}/pedido",
+          "protocol": "http",
           "host": [
             "localhost"
           ],
