@@ -22,7 +22,7 @@ public class Pedido {
     @Column(name = "ID")
     private Long id;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "USUARIO_ID")
     private Usuario usuario;
 
