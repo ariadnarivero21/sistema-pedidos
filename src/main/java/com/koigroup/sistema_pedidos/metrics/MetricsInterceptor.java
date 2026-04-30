@@ -2,13 +2,14 @@ package com.koigroup.sistema_pedidos.metrics;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
 
 @Component
-public class MetricsInterceptor implements HandlerInterceptor {
+public class MetricsInterceptor implements HandlerInterceptor { //PATRON Interceptor (problema Cross-cutting concern)
 
     private static final String START_TIME = "START_TIME";
 
@@ -19,17 +20,18 @@ public class MetricsInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+    public boolean preHandle(HttpServletRequest request,
+                             @NonNull HttpServletResponse response,
+                             @NonNull Object handlr) {
         request.setAttribute(START_TIME, System.currentTimeMillis());
         return true;
     }
 
     @Override
     public void afterCompletion(HttpServletRequest request,
-                                HttpServletResponse response,
-                                Object handler,
-                                @Nullable Exception ex
-    ) {
+                                @NonNull HttpServletResponse response,
+                                @NonNull Object handler,
+                                @Nullable Exception ex) {
         Object startAttr = request.getAttribute(START_TIME);
         if (startAttr == null) {
             return;

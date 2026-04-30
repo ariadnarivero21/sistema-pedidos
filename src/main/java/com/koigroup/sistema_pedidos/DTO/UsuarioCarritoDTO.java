@@ -2,11 +2,9 @@ package com.koigroup.sistema_pedidos.DTO;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 public class UsuarioCarritoDTO {
 
@@ -14,7 +12,6 @@ public class UsuarioCarritoDTO {
 
     @JsonProperty("usuario_id")
     private Long usuarioId;
-
     private String codigo;
 
 }

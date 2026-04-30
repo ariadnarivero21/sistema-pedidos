@@ -1,18 +1,18 @@
 package com.koigroup.sistema_pedidos.services;
 
+import com.koigroup.sistema_pedidos.DTO.CarritoDTO;
 import com.koigroup.sistema_pedidos.DTO.UsuarioCarritoDTO;
 import com.koigroup.sistema_pedidos.DTO.request.NuevoProductoRequest;
 import com.koigroup.sistema_pedidos.entities.Carrito;
 import com.koigroup.sistema_pedidos.entities.CarritoItem;
 import com.koigroup.sistema_pedidos.entities.Producto;
 import com.koigroup.sistema_pedidos.entities.Usuario;
-import com.koigroup.sistema_pedidos.exception.CarritoItemNoEncontradoException;
-import com.koigroup.sistema_pedidos.exception.CarritoNoEncontradoException;
-import com.koigroup.sistema_pedidos.exception.ProductoNoEncontradoException;
-import com.koigroup.sistema_pedidos.exception.UsuarioNoEncontradoException;
+import com.koigroup.sistema_pedidos.exception.*;
 import com.koigroup.sistema_pedidos.repositories.CarritoRepository;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -52,15 +52,16 @@ public class CarritoService {
                         carrito.getCodigo())).collect(Collectors.toList());
     }
 
-    public void createCarritoForUsuario(Long idUsuario) {
+    public CarritoDTO createCarritoForUsuario(Long idUsuario) {
         Carrito carrito = new Carrito();
 
         Usuario usuario = usuarioService.findById(idUsuario).orElseThrow(() -> new UsuarioNoEncontradoException(idUsuario));
         carrito.setUsuario(usuario);
         carrito.setCodigo("CAR-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
-        carritoRepository.save(carrito);
-
         log.info("Creando nuevo carrito para usuario {}", usuario.getId());
+
+        Carrito saved = carritoRepository.save(carrito);
+        return CarritoDTO.from(saved);
     }
 
     public void addProducto(NuevoProductoRequest request) {
@@ -69,20 +70,40 @@ public class CarritoService {
         Producto producto = productoService.findByCodigo(request.getCodigoProducto())
                 .orElseThrow(() -> new ProductoNoEncontradoException(request.getCodigoProducto()));
 
-        CarritoItem carritoItem = new CarritoItem();
-        carritoItem.setProducto(producto);
-        carritoItem.setCarrito(carrito);
-        carritoItem.setCantidad(request.getCantidadProducto());
-        carrito.getItems().add(carritoItem);
+        validateUsuarioLogueado(carrito);
+        CarritoItem carritoItem = carritoItemService.findByCarritoAndProducto(request.getCodigoCarrito(),
+                        request.getCodigoProducto())
+                .orElseGet(() -> {
+                    CarritoItem nuevo = new CarritoItem();
+                    nuevo.setProducto(producto);
+                    nuevo.setCarrito(carrito);
+                    nuevo.setCantidad(0);
+                    return nuevo;
+                });
+
+        carritoItem.setCantidad(carritoItem.getCantidad() + request.getCantidadProducto());
         carritoItemService.saveItem(carritoItem);
-        carritoRepository.save(carrito);
     }
 
     public void deleteProducto(String codigoProducto, String codigoCarrito) {
+        Carrito carrito = carritoRepository.findByCodigo(codigoCarrito)
+                .orElseThrow(() -> new CarritoNoEncontradoException(codigoCarrito));
+        validateUsuarioLogueado(carrito);
         CarritoItem carritoItem = carritoItemService
                 .findByCarritoAndProducto(codigoCarrito, codigoProducto)
                 .orElseThrow(() -> new CarritoItemNoEncontradoException(codigoCarrito, codigoProducto));
 
         carritoItemService.deleteItem(carritoItem);
+    }
+
+    private void validateUsuarioLogueado(Carrito carrito) {
+        String usernameAuthenticated = SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getName();
+
+        String usernameLogueado = carrito.getUsuario().getUsername();
+        if (!usernameLogueado.equals(usernameAuthenticated)) {
+            throw new AccesoDenegadoException(usernameLogueado);
+        }
     }
 }

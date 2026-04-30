@@ -14,12 +14,16 @@ import com.koigroup.sistema_pedidos.services.CarritoItemService;
 import com.koigroup.sistema_pedidos.services.CarritoService;
 import com.koigroup.sistema_pedidos.services.ProductoService;
 import com.koigroup.sistema_pedidos.services.UsuarioService;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -44,6 +48,27 @@ class CarritoServiceTest {
     @InjectMocks
     private CarritoService carritoService;
 
+    @BeforeEach
+    void setupSecurityContext() {
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken("testuser", "password")
+        );
+    }
+
+    @AfterEach
+    void clearSecurityContext() {
+        SecurityContextHolder.clearContext();
+    }
+
+    private Carrito carritoConUsuario() {
+        Usuario usuario = new Usuario();
+        usuario.setUsername("testuser");
+        Carrito carrito = new Carrito();
+        carrito.setUsuario(usuario);
+        carrito.setItems(new ArrayList<>());
+        return carrito;
+    }
+
     // --- createCarritoForUsuario ---
 
     @Test
@@ -51,7 +76,11 @@ class CarritoServiceTest {
         Usuario usuario = new Usuario();
         usuario.setId(1L);
 
+        Carrito carritoGuardado = new Carrito();
+        carritoGuardado.setUsuario(usuario);
+
         when(usuarioService.findById(1L)).thenReturn(Optional.of(usuario));
+        when(carritoRepository.save(any())).thenReturn(carritoGuardado);
 
         carritoService.createCarritoForUsuario(1L);
 
@@ -72,8 +101,7 @@ class CarritoServiceTest {
 
     @Test
     void addProducto_carritoYProductoExisten_guardaItemConCantidad() {
-        Carrito carrito = new Carrito();
-        carrito.setItems(new ArrayList<>());
+        Carrito carrito = carritoConUsuario();
 
         Producto producto = new Producto();
         producto.setCodigo("TEC-001");
@@ -85,13 +113,13 @@ class CarritoServiceTest {
 
         when(carritoRepository.findByCodigo("CAR-001")).thenReturn(Optional.of(carrito));
         when(productoService.findByCodigo("TEC-001")).thenReturn(Optional.of(producto));
+        when(carritoItemService.findByCarritoAndProducto("CAR-001", "TEC-001")).thenReturn(Optional.empty());
 
         carritoService.addProducto(request);
 
         ArgumentCaptor<CarritoItem> captor = ArgumentCaptor.forClass(CarritoItem.class);
         verify(carritoItemService).saveItem(captor.capture());
         assertEquals(3, captor.getValue().getCantidad());
-        verify(carritoRepository).save(carrito);
     }
 
     @Test
@@ -109,8 +137,7 @@ class CarritoServiceTest {
 
     @Test
     void addProducto_productoNoEncontrado_lanzaExcepcion() {
-        Carrito carrito = new Carrito();
-        carrito.setItems(new ArrayList<>());
+        Carrito carrito = carritoConUsuario();
 
         NuevoProductoRequest request = new NuevoProductoRequest();
         request.setCodigoCarrito("CAR-001");
@@ -128,8 +155,10 @@ class CarritoServiceTest {
 
     @Test
     void deleteProducto_itemExiste_eliminaItem() {
+        Carrito carrito = carritoConUsuario();
         CarritoItem item = new CarritoItem();
 
+        when(carritoRepository.findByCodigo("CAR-001")).thenReturn(Optional.of(carrito));
         when(carritoItemService.findByCarritoAndProducto("CAR-001", "TEC-001"))
                 .thenReturn(Optional.of(item));
 
@@ -140,6 +169,9 @@ class CarritoServiceTest {
 
     @Test
     void deleteProducto_itemNoExiste_lanzaExcepcion() {
+        Carrito carrito = carritoConUsuario();
+
+        when(carritoRepository.findByCodigo("CAR-001")).thenReturn(Optional.of(carrito));
         when(carritoItemService.findByCarritoAndProducto("CAR-001", "TEC-999"))
                 .thenReturn(Optional.empty());
 

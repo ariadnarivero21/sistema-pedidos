@@ -29,6 +29,7 @@ public class SecurityConfiguration {
                     authorize.requestMatchers("/closed").authenticated();
                     authorize.anyRequest().authenticated();
                 })
+                //para poder ver la consola H2
                 .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
                 .httpBasic(Customizer.withDefaults())
                 .build(); //Patrón Builder
