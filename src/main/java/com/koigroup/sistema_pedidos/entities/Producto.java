@@ -2,9 +2,7 @@ package com.koigroup.sistema_pedidos.entities;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -21,11 +19,17 @@ public class Producto {
     @Column(name = "ID")
     private Long id;
 
+    @Version
+    private Long version;
+
     @Column(name = "NOMBRE")
     private String nombre;
 
     @Column(name = "PRECIO")
     private BigDecimal precio;
+
+    @Column(name = "STOCK")
+    private Integer stock;
 
     @Column(name = "CODIGO")
     private String codigo;

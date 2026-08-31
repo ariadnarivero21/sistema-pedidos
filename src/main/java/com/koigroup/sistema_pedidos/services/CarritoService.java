@@ -9,17 +9,19 @@ import com.koigroup.sistema_pedidos.entities.Producto;
 import com.koigroup.sistema_pedidos.entities.Usuario;
 import com.koigroup.sistema_pedidos.exception.*;
 import com.koigroup.sistema_pedidos.repositories.CarritoRepository;
-import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 @Service
 public class CarritoService {
 
@@ -28,14 +30,6 @@ public class CarritoService {
     private final UsuarioService usuarioService;
     private final ProductoService productoService;
     private final CarritoItemService carritoItemService;
-
-    public CarritoService(CarritoRepository carritoRepository, UsuarioService usuarioService,
-                          ProductoService productoService, CarritoItemService carritoItemService) {
-        this.carritoRepository = carritoRepository;
-        this.usuarioService = usuarioService;
-        this.productoService = productoService;
-        this.carritoItemService = carritoItemService;
-    }
 
     public Optional<Carrito> getByCodigo(String codigo) {
         return carritoRepository.findByCodigo(codigo);
@@ -64,6 +58,7 @@ public class CarritoService {
         return CarritoDTO.from(saved);
     }
 
+    @Transactional
     public void addProducto(NuevoProductoRequest request) {
         Carrito carrito = carritoRepository.findByCodigo(request.getCodigoCarrito())
                 .orElseThrow(() -> new CarritoNoEncontradoException(request.getCodigoCarrito()));
@@ -81,10 +76,15 @@ public class CarritoService {
                     return nuevo;
                 });
 
+        if (producto.getStock() < request.getCantidadProducto()) {
+            throw new StockInsuficienteException(request.getCantidadProducto(), request.getCodigoProducto(), producto.getStock());
+        }
+
         carritoItem.setCantidad(carritoItem.getCantidad() + request.getCantidadProducto());
         carritoItemService.saveItem(carritoItem);
     }
 
+    @Transactional
     public void deleteProducto(String codigoProducto, String codigoCarrito) {
         Carrito carrito = carritoRepository.findByCodigo(codigoCarrito)
                 .orElseThrow(() -> new CarritoNoEncontradoException(codigoCarrito));

@@ -5,21 +5,22 @@ import com.koigroup.sistema_pedidos.entities.Categoria;
 import com.koigroup.sistema_pedidos.entities.Pedido;
 import com.koigroup.sistema_pedidos.enums.EstadoPedido;
 import com.koigroup.sistema_pedidos.repositories.PedidoRepository;
-import jakarta.transaction.Transactional;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class PedidoProcessorService {
 
     private final PedidoRepository pedidoRepository;
     private final DescuentoService descuentoService;
+    private final ProductoService productoService;
     private final Logger log = LoggerFactory.getLogger(PedidoProcessorService.class);
 
     @Transactional
@@ -33,10 +34,13 @@ public class PedidoProcessorService {
             pedido.setEstadoPedido(pedido.getEstadoPedido().transicionarA(EstadoPedido.COMPLETADO));
         } catch (Exception e) {
             log.error("Error al procesar pedido con ID {}: {}", pedidoId, e.getMessage());
+
+            for(CarritoItem item : pedido.getCarrito().getItems()){
+                productoService.addStock(item.getProducto(), item.getCantidad());
+            }
             pedido.setEstadoPedido(EstadoPedido.ERROR);
             pedido.setMensajeError("Se canceló el pedido por error en el procesamiento: " + e.getMessage());
         }
-        pedidoRepository.save(pedido);
     }
 
     private BigDecimal calculatePrecioFinal(List<CarritoItem> carritoItemList) {

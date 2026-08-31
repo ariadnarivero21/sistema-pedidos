@@ -3,20 +3,18 @@ package com.koigroup.sistema_pedidos.services;
 import com.koigroup.sistema_pedidos.DTO.ProductoCarritoDTO;
 import com.koigroup.sistema_pedidos.entities.CarritoItem;
 import com.koigroup.sistema_pedidos.repositories.CarritoItemRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 @Service
 public class CarritoItemService {
 
     private final CarritoItemRepository carritoItemRepository;
-
-    public CarritoItemService(CarritoItemRepository carritoItemRepository) {
-        this.carritoItemRepository = carritoItemRepository;
-    }
 
     public void saveItem(CarritoItem item){
         carritoItemRepository.save(item);

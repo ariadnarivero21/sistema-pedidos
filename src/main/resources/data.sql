@@ -34,8 +34,10 @@ CREATE TABLE DESCUENTO (
 
 CREATE TABLE PRODUCTO(
     ID INT AUTO_INCREMENT PRIMARY KEY,
+    VERSION BIGINT DEFAULT 0,
     NOMBRE VARCHAR (255),
     PRECIO DECIMAL(10,2),
+    STOCK  INT,
     CODIGO VARCHAR(50) UNIQUE,
     CATEGORIA_ID INT,
     CONSTRAINT FK_PRODUCTO_CATEGORIA
@@ -90,31 +92,31 @@ INSERT INTO CATEGORIA (NOMBRE) VALUES
 ('ALIMENTOS'), --4
 ('ENTRETENIMIENTO'); --5
 
-INSERT INTO PRODUCTO (NOMBRE, PRECIO, CODIGO, CATEGORIA_ID) VALUES
+INSERT INTO PRODUCTO (VERSION, NOMBRE, PRECIO, STOCK, CODIGO, CATEGORIA_ID) VALUES
 -- TECNOLOGIA (1)
-('Mouse Logitech', 1500.00, 'TEC-001', 1),
-('Teclado Redragon', 3500.00, 'TEC-002', 1),
-('Auriculares Sony', 12000.00, 'TEC-003', 1),
+(0, 'Mouse Logitech', 1500.00, 3, 'TEC-001', 1),
+(0, 'Teclado Redragon', 3500.00, 5, 'TEC-002', 1),
+(0, 'Auriculares Sony', 12000.00, 3, 'TEC-003', 1),
 
 -- INDUMENTARIA (2)
-('Remera Nike', 8000.00, 'IND-001', 2),
-('Zapatillas Adidas', 25000.00, 'IND-002', 2),
-('Campera Puma', 18000.00, 'IND-003', 2),
+(0, 'Remera Nike', 8000.00, 10, 'IND-001', 2),
+(0, 'Zapatillas Adidas', 25000.00, 11, 'IND-002', 2),
+(0, 'Campera Puma', 18000.00, 4, 'IND-003', 2),
 
 -- HOGAR (3)
-('Silla de comedor', 22000.00, 'HOG-001', 3),
-('Lampara LED', 5000.00, 'HOG-002', 3),
-('Mesa de madera', 45000.00, 'HOG-003', 3),
+(0, 'Silla de comedor', 22000.00, 2, 'HOG-001', 3),
+(0, 'Lampara LED', 5000.00, 3, 'HOG-002', 3),
+(0, 'Mesa de madera', 45000.00, 4, 'HOG-003', 3),
 
 -- ALIMENTOS (4)
-('Coca Cola 2L', 2500.00, 'ALI-001', 4),
-('Galletitas Oreo', 1200.00, 'ALI-002', 4),
-('Pizza congelada', 3000.00, 'ALI-003', 4),
+(0, 'Coca Cola 2L', 2500.00, 22, 'ALI-001', 4),
+(0, 'Galletitas Oreo', 1200.00, 12, 'ALI-002', 4),
+(0, 'Pizza congelada', 3000.00, 4, 'ALI-003', 4),
 
 -- ENTRETENIMIENTO (5)
-('PlayStation 5', 900000.00, 'ENT-001', 5),
-('Juego FIFA 24', 60000.00, 'ENT-002', 5),
-('Control PS5', 85000.00, 'ENT-003', 5);
+(0, 'PlayStation 5', 900000.00, 3, 'ENT-001', 5),
+(0, 'Juego FIFA 24', 60000.00, 4, 'ENT-002', 5),
+(0, 'Control PS5', 85000.00, 3, 'ENT-003', 5);
 
 INSERT INTO DESCUENTO (CATEGORIA_ID, PORCENTAJE) VALUES
 (1, 10.00),  -- TECNOLOGIA → 10%
