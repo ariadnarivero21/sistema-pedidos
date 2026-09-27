@@ -5,23 +5,23 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.web.client.HttpClientErrorException;
 
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(HttpClientErrorException.Conflict.class)
-    public ResponseEntity<ErrorResponseDTO> handleConflictVersion(Exception e){
+    @ExceptionHandler(ObjectOptimisticLockingFailureException.class)
+    public ResponseEntity<ErrorResponseDTO> handleConflictVersion(Exception e) {
+        log.warn("Conflicto de concurrencia: {}", e.getMessage());
         HttpStatus status = HttpStatus.CONFLICT;
         return ResponseEntity
                 .status(status)
-                .body(new ErrorResponseDTO(status.value(), e.getMessage()));
+                .body(new ErrorResponseDTO(status.value(), "El producto fue modificado por otra operación. Intentá nuevamente."));
     }
 
     @ExceptionHandler({HttpMessageNotReadableException.class, MethodArgumentNotValidException.class})

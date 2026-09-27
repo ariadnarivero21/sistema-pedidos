@@ -1,16 +1,18 @@
 package com.koigroup.sistema_pedidos.entities;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
 @NoArgsConstructor
 @Entity
+@Getter
+@Setter
 @Table(name = "PRODUCTO")
 public class Producto {
 
@@ -20,6 +22,7 @@ public class Producto {
     private Long id;
 
     @Version
+    @Column(name = "VERSION")
     private Long version;
 
     @Column(name = "NOMBRE")
@@ -40,4 +43,6 @@ public class Producto {
 
     @OneToMany(mappedBy = "producto")
     private List<CarritoItem> items = new ArrayList<>();
+
+
 }

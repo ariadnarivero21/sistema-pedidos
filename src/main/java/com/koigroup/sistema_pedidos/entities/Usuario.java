@@ -2,11 +2,13 @@ package com.koigroup.sistema_pedidos.entities;
 
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
 @NoArgsConstructor
+@Getter
+@Setter
 @Entity
 @Table(name = "USUARIO")
 public class Usuario {

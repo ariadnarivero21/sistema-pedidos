@@ -4,13 +4,16 @@ package com.koigroup.sistema_pedidos.entities;
 import com.koigroup.sistema_pedidos.enums.EstadoPedido;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Data
 @NoArgsConstructor
+@Getter
+@Setter
 @Entity
 @Table(name = "PEDIDO")
 public class Pedido {
